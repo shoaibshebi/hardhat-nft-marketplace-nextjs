@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-// import { ConnectButton } from "web3uikit";
+import { ConnectButton } from "web3uikit";
 
 export default function Header() {
   const [loadButton, setLoadButton] = useState(false);
@@ -17,7 +17,7 @@ export default function Header() {
         <Link href="/sell-nft">
           <a className="mr-4 p-6">Sell NFT</a>
         </Link>
-        {/* {loadButton && <ConnectButton moralisAuth={false} />} */}
+        {loadButton && <ConnectButton moralisAuth={false} />}
       </div>
     </nav>
   );

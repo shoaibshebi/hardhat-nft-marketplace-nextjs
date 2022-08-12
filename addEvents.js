@@ -1,26 +1,25 @@
-import Moralis from "moralis";
-const { network } = require("hardhat");
-
-const networkMappings = "./constants/networkMapping.json";
-
+const Moralis = require("moralis/node");
+require("dotenv").config();
+const contractAddresses = require("./constants/networkMapping.json");
 let chainId = process.env.chainId || 31337;
 let moralisChainId = chainId == "31337" ? "1337" : chainId;
-
-const contractAddressArray = networkMappings[chainId]["NftMarketplace"];
+const contractAddressArray = contractAddresses[chainId]["NftMarketplace"];
 const contractAddress = contractAddressArray[contractAddressArray.length - 1];
 
-const appId = process.env.NEXT_PUBLIC_APP_ID;
 const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+const appId = process.env.NEXT_PUBLIC_APP_ID;
 const masterKey = process.env.masterKey;
 
 async function main() {
   await Moralis.start({ serverUrl, appId, masterKey });
-  console.log(`Working with contract address ${contractAddress}`);
+  console.log(`Working with contrat address ${contractAddress}`);
 
   let itemListedOptions = {
+    // Moralis understands a local chain is 1337
     chainId: moralisChainId,
     sync_historical: true,
     topic: "ItemListed(address,address,uint256,uint256)",
+    address: contractAddress,
     abi: {
       anonymous: false,
       inputs: [
@@ -54,8 +53,10 @@ async function main() {
     },
     tableName: "ItemListed",
   };
-  const itemBoughtOptions = {
+
+  let itemBoughtOptions = {
     chainId: moralisChainId,
+    address: contractAddress,
     sync_historical: true,
     topic: "ItemBought(address,address,uint256,uint256)",
     abi: {
@@ -91,10 +92,12 @@ async function main() {
     },
     tableName: "ItemBought",
   };
-  const itemCanceledOptions = {
+
+  let itemCanceledOptions = {
     chainId: moralisChainId,
+    address: contractAddress,
+    topic: "ItemCanceled(address,address,uint256)",
     sync_historical: true,
-    topic: "ItemCanceled(address, address, unit256)",
     abi: {
       anonymous: false,
       inputs: [
@@ -111,7 +114,7 @@ async function main() {
           type: "address",
         },
         {
-          indexed: false,
+          indexed: true,
           internalType: "uint256",
           name: "tokenId",
           type: "uint256",
@@ -144,7 +147,6 @@ async function main() {
       useMasterKey: true,
     }
   );
-
   if (
     listedResponse.success &&
     canceledResponse.success &&
@@ -158,7 +160,7 @@ async function main() {
 
 main()
   .then(() => process.exit(0))
-  .catch((err) => {
-    console.log(err);
+  .catch((error) => {
+    console.error(error);
     process.exit(1);
   });
