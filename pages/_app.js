@@ -3,9 +3,17 @@ import { MoralisProvider } from "react-moralis";
 import Header from "../components/Header";
 import Head from "next/head";
 import { NotificationProvider } from "web3uikit";
+import dynamic from "next/dynamic";
 
 const APP_ID = process.env.NEXT_PUBLIC_APP_ID;
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+
+const MoralisContextProvider = dynamic(
+  () => import("../context/MoralisContext"),
+  {
+    ssr: false,
+  }
+);
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -15,12 +23,12 @@ function MyApp({ Component, pageProps }) {
         <meta name="description" content="NFT Marketplace" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <MoralisProvider initializeOnMount={false}>
+      <MoralisContextProvider>
         <NotificationProvider>
           <Header />
           <Component {...pageProps} />
         </NotificationProvider>
-      </MoralisProvider>
+      </MoralisContextProvider>
     </div>
   );
 }

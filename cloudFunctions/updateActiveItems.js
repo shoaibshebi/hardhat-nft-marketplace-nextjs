@@ -5,7 +5,9 @@
 Moralis.Cloud.afterSave("ItemListed", async (request) => {
   const confirmed = request.object.get("confirmed");
   const logger = Moralis.Cloud.getLogger();
-  logger.info("Looking for confirmed TX...");
+  logger.info(
+    "Marketplace:Into ItemListed Function - Looking for confirmed TX..."
+  );
   if (confirmed) {
     logger.info("Found item!");
     const ActiveItem = Moralis.Object.extend("ActiveItem");
@@ -50,7 +52,9 @@ Moralis.Cloud.afterSave("ItemListed", async (request) => {
 
 Moralis.Cloud.afterSave("ItemCanceled", async (request) => {
   const confirmed = request.object.get("confirmed");
-  logger.info(`Marketplace | Object: ${request.object}`);
+  logger.info(
+    `Marketplace:Into ItemCanceled Function | Object: ${request.object}`
+  );
   if (confirmed) {
     const logger = Moralis.Cloud.getLogger();
     const ActiveItem = Moralis.Object.extend("ActiveItem");
@@ -81,7 +85,9 @@ Moralis.Cloud.afterSave("ItemCanceled", async (request) => {
 
 Moralis.Cloud.afterSave("ItemBought", async (request) => {
   const confirmed = request.object.get("confirmed");
-  logger.info(`Marketplace | Object: ${request.object}`);
+  logger.info(
+    `Marketplace:Into ItemBought Function  | Object: ${request.object}`
+  );
   if (confirmed) {
     const logger = Moralis.Cloud.getLogger();
     const ActiveItem = Moralis.Object.extend("ActiveItem");
