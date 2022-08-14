@@ -5,6 +5,7 @@ import nftAbi from "../constants/BasicNft.json";
 import Image from "next/image";
 import { Card, useNotification } from "web3uikit";
 import { ethers } from "ethers";
+import UpdateListingModal from "./UpdateListingModal";
 
 const truncateStr = (fullStr, strLen) => {
   if (fullStr.length <= strLen) return fullStr;
@@ -28,18 +29,29 @@ export default function NFTBox({
   marketplaceAddress,
   seller,
 }) {
-  //   const { isWeb3Enabled, account } = useMoralis();
-  const isWeb3Enabled = true,
-    account = "";
+  const { isWeb3Enabled, account } = useMoralis();
   const [imageURI, setImageURI] = useState("");
   const [tokenName, setTokenName] = useState("");
   const [tokenDescription, setTokenDescription] = useState("");
-  // const dispatch = useNotification();
+  const [showModal, setShowModal] = useState(false);
+  const hideModal = () => setShowModal(false);
+  const dispatch = useNotification();
+
   const { runContractFunction: getTokenURI } = useWeb3Contract({
     abi: nftAbi,
     contractAddress: nftAddress,
     functionName: "tokenURI",
     params: {
+      tokenId: tokenId,
+    },
+  });
+  const { runContractFunction: buyItem } = useWeb3Contract({
+    abi: nftMarketplaceAbi,
+    contractAddress: marketplaceAddress,
+    functionName: "buyItem",
+    msgValue: price,
+    params: {
+      nftAddress: nftAddress,
       tokenId: tokenId,
     },
   });
@@ -70,16 +82,46 @@ export default function NFTBox({
     ? "you"
     : truncateStr(seller || "", 15);
 
+  const handleCardClick = () => {
+    isOwnedByUser
+      ? setShowModal(true)
+      : buyItem({
+          onError: (error) => console.log(error),
+          onSuccess: handleBuyItemSuccess,
+        });
+  };
+
+  const handleBuyItemSuccess = async (tx) => {
+    await tx.wait(1);
+    dispatch({
+      type: "success",
+      message: "Item bought!",
+      title: "Item Bought",
+      position: "topR",
+    });
+  };
+
   return (
     <div>
       <div>
-        {true ? (
-          <div>
-            <Card title={tokenName} description={tokenDescription}>
+        {imageURI ? (
+          <div style={{ margin: "0px 10px" }}>
+            <UpdateListingModal
+              isVisible={showModal}
+              tokenId={tokenId}
+              marketplaceAddress={marketplaceAddress}
+              nftAddress={nftAddress}
+              onClose={hideModal}
+            />
+            <Card
+              title={tokenName}
+              description={tokenDescription}
+              onClick={handleCardClick}
+            >
               <div className="p-2">
                 <div className="flex flex-col items-end gap-2">
                   <div>#{tokenId}</div>
-                  <div className="italic text-sm">
+                  <div className="italic text-sky-500">
                     Owned by {formattedSellerAddress}
                   </div>
                   <Image
