@@ -8,12 +8,12 @@ import dynamic from "next/dynamic";
 const APP_ID = process.env.NEXT_PUBLIC_APP_ID;
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
-const MoralisContextProvider = dynamic(
-  () => import("../context/MoralisContext"),
-  {
-    ssr: false,
-  }
-);
+// const MoralisContextProvider = dynamic(
+//   () => import("../context/MoralisContext"),
+//   {
+//     ssr: false,
+//   }
+// );
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -23,12 +23,12 @@ function MyApp({ Component, pageProps }) {
         <meta name="description" content="NFT Marketplace" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <MoralisContextProvider>
-        <NotificationProvider>
-          <Header />
-          <Component {...pageProps} />
-        </NotificationProvider>
-      </MoralisContextProvider>
+      <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
+        {/* <NotificationProvider> */}
+        <Header />
+        <Component {...pageProps} />
+        {/* </NotificationProvider> */}
+      </MoralisProvider>
     </div>
   );
 }

@@ -4,7 +4,8 @@ import { useMoralisQuery, useMoralis } from "react-moralis";
 import NFTBox from "../components/NFTBox";
 
 export default function Home() {
-  const { isWeb3Enabled } = useMoralis();
+  // const { isWeb3Enabled } = useMoralis();
+  const isWeb3Enabled = true;
   const { data: listedNfts, isFetching: fetchingListedNfts } = useMoralisQuery(
     // TableName
     // Function for the query

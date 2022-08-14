@@ -28,7 +28,9 @@ export default function NFTBox({
   marketplaceAddress,
   seller,
 }) {
-  const { isWeb3Enabled, account } = useMoralis();
+  //   const { isWeb3Enabled, account } = useMoralis();
+  const isWeb3Enabled = true,
+    account = "";
   const [imageURI, setImageURI] = useState("");
   const [tokenName, setTokenName] = useState("");
   const [tokenDescription, setTokenDescription] = useState("");
