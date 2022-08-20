@@ -30,6 +30,10 @@ export default function NFTBox({
   seller,
 }) {
   const { isWeb3Enabled, account } = useMoralis();
+  // const { isWeb3Enabled, account } = {
+  //   isWeb3Enabled: true,
+  //   account: "",
+  // };
   const [imageURI, setImageURI] = useState("");
   const [tokenName, setTokenName] = useState("");
   const [tokenDescription, setTokenDescription] = useState("");
@@ -37,6 +41,7 @@ export default function NFTBox({
   const hideModal = () => setShowModal(false);
   const dispatch = useNotification();
 
+  console.log("tokeid ", tokenId);
   const { runContractFunction: getTokenURI } = useWeb3Contract({
     abi: nftAbi,
     contractAddress: nftAddress,
@@ -58,17 +63,32 @@ export default function NFTBox({
 
   async function updateUI() {
     const tokenURI = await getTokenURI();
-    console.log(`The TokenURI is ${tokenURI}`);
+    console.log(`The TokenURI is ${tokenId} ${tokenURI}`);
     // We are going to cheat a little here...
     if (tokenURI) {
       // IPFS Gateway: A server that will return IPFS files from a "normal" URL.
       const requestURL = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
-      const tokenURIResponse = await (await fetch(requestURL)).json();
-      const imageURI = tokenURIResponse.image;
-      const imageURIURL = imageURI.replace("ipfs://", "https://ipfs.io/ipfs/");
-      setImageURI(imageURIURL);
-      setTokenName(tokenURIResponse.name);
-      setTokenDescription(tokenURIResponse.description);
+      console.log("requestURL ", requestURL);
+      let tokenURIResponse;
+      try {
+        // tokenURIResponse = await (await fetch(requestURL)).json();
+        tokenURIResponse = {
+          image: tokenURI,
+          name: "Pop Munkey NFT",
+          description: "Pop Munkey NFT, looking Yoooo!",
+        };
+        console.log("tokenURIResponse ", tokenURIResponse);
+        const imageURI = tokenURIResponse.image;
+        const imageURIURL = imageURI.replace(
+          "ipfs://",
+          "https://ipfs.io/ipfs/"
+        );
+        setImageURI(imageURIURL);
+        setTokenName(tokenURIResponse.name);
+        setTokenDescription(tokenURIResponse.description);
+      } catch (error) {
+        console.log("err ", error);
+      }
     }
   }
   useEffect(() => {
@@ -77,6 +97,7 @@ export default function NFTBox({
     }
   }, [isWeb3Enabled]);
 
+  // debugger;
   const isOwnedByUser = seller === account || seller === undefined;
   const formattedSellerAddress = isOwnedByUser
     ? "you"
@@ -105,7 +126,8 @@ export default function NFTBox({
     <div>
       <div>
         {imageURI ? (
-          <div style={{ margin: "0px 10px" }}>
+          // <div style={{ margin: "0px 10px" }}>
+          <div className="m-10">
             <UpdateListingModal
               isVisible={showModal}
               tokenId={tokenId}
@@ -119,17 +141,19 @@ export default function NFTBox({
               onClick={handleCardClick}
             >
               <div className="p-2">
-                <div className="flex flex-col items-end gap-2">
+                <div className="flex flex-col items-center gap-2">
                   <div>#{tokenId}</div>
                   <div className="italic text-sky-500">
                     Owned by {formattedSellerAddress}
                   </div>
-                  <Image
-                    loader={() => imageURI}
-                    src={imageURI}
-                    height="200"
-                    width="200"
-                  />
+                  <p className="text-center">
+                    <Image
+                      loader={() => imageURI}
+                      src={imageURI}
+                      height="200"
+                      width="200"
+                    />
+                  </p>
                   <div className="font-bold">
                     {ethers.utils.formatUnits(price, "ether")} ETH
                   </div>

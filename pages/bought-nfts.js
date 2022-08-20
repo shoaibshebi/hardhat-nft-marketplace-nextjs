@@ -6,7 +6,7 @@ import nftAbi from "../constants/BasicNft.json";
 import networkMapping from "../constants/networkMapping.json";
 import { useEffect, useState } from "react";
 
-export default function SellNft() {
+export default function BoughtNfts() {
   const dispatch = useNotification();
   const [proceeds, setProceeds] = useState("0");
   const { chainId, account, isWeb3Enabled } = useMoralis();
