@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Card, useNotification } from "web3uikit";
 import { ethers } from "ethers";
 import UpdateListingModal from "./UpdateListingModal";
+import { useRouter } from "next/router";
 
 const truncateStr = (fullStr, strLen) => {
   if (fullStr.length <= strLen) return fullStr;
@@ -29,11 +30,8 @@ export default function NFTBox({
   marketplaceAddress,
   seller,
 }) {
+  const Router = useRouter();
   const { isWeb3Enabled, account } = useMoralis();
-  // const { isWeb3Enabled, account } = {
-  //   isWeb3Enabled: true,
-  //   account: "",
-  // };
   const [imageURI, setImageURI] = useState("");
   const [tokenName, setTokenName] = useState("");
   const [tokenDescription, setTokenDescription] = useState("");
@@ -41,7 +39,6 @@ export default function NFTBox({
   const hideModal = () => setShowModal(false);
   const dispatch = useNotification();
 
-  console.log("tokeid ", tokenId);
   const { runContractFunction: getTokenURI } = useWeb3Contract({
     abi: nftAbi,
     contractAddress: nftAddress,
@@ -71,18 +68,10 @@ export default function NFTBox({
       console.log("requestURL ", requestURL);
       let tokenURIResponse;
       try {
-        // tokenURIResponse = await (await fetch(requestURL)).json();
-        tokenURIResponse = {
-          image: tokenURI,
-          name: "Pop Munkey NFT",
-          description: "Pop Munkey NFT, looking Yoooo!",
-        };
+        tokenURIResponse = await (await fetch(requestURL)).json();
         console.log("tokenURIResponse ", tokenURIResponse);
         const imageURI = tokenURIResponse.image;
-        const imageURIURL = imageURI.replace(
-          "ipfs://",
-          "https://ipfs.io/ipfs/"
-        );
+        let imageURIURL = imageURI.replace("ipfs://", "https://ipfs.io/ipfs/");
         setImageURI(imageURIURL);
         setTokenName(tokenURIResponse.name);
         setTokenDescription(tokenURIResponse.description);
@@ -120,8 +109,12 @@ export default function NFTBox({
       title: "Item Bought",
       position: "topR",
     });
+    setTimeout(() => {
+      window.location = "http://localhost:3000/bought-nfts";
+    }, 1000);
   };
 
+  const pathname = Router.pathname;
   return (
     <div>
       <div>
@@ -138,7 +131,7 @@ export default function NFTBox({
             <Card
               title={tokenName}
               description={tokenDescription}
-              onClick={handleCardClick}
+              onClick={pathname === "/bought-nfts" ? false : handleCardClick}
             >
               <div className="p-2">
                 <div className="flex flex-col items-center gap-2">
