@@ -1,5 +1,8 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+<img width="1671" alt="hero here nft" src="https://user-images.githubusercontent.com/47749364/190374197-13ac5e06-640a-4474-9865-96244fcada29.png">
+
+
 ## Features
 
 1. Home Page:
